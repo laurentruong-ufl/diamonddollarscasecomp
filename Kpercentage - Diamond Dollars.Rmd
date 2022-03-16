@@ -1,0 +1,64 @@
+---
+title: "K%"
+author: "Lauren Truong"
+date: "3/16/2022"
+output: word_document
+---
+
+```{R setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Import the K% data.
+
+```{R}
+library(readxl)
+Kpercent1 <- read_excel("C:/Users/truong.lauren/OneDrive/R Code/Kpercent1.xlsx")
+View(Kpercent1)
+Kpercent2 <- read_excel("C:/Users/truong.lauren/OneDrive/R Code/Kpercent2.xlsx")
+View(Kpercent2)
+```
+
+# Convert to dataframe.
+
+```{R}
+mydata <- as.data.frame(Kpercent1)
+df = data.frame(matrix(ncol = 1, nrow = 60))
+
+colnames(df)[1] <- "Kpercentage"
+```
+
+# Combine datasets.
+
+```{R}
+for(i in 1:30) { # i, iterations
+  df$Kpercentage[i]=Kpercent1$`K%`[i]
+}
+
+for(i in 31:60) {
+  df$Kpercentage[i]=Kpercent2$`K%`[i-30]
+}
+```
+
+# What-if statement.
+
+```{R}
+for(i in 1:60){
+  if(i <= 30){
+    df$zone[i] = "Sides"
+  }
+  else {
+    df$zone[i] = "T/B"
+  }
+}
+```
+
+# ANOVA and Tukey.
+
+```{R}
+anova <- aov(Kpercentage ~ zone, data=df)
+TukeyHSD(anova, conf.level = .95)
+```
+
+# Significant difference between top, bottom, side, and strikeouts within the zone.
+# Outcome: Shrink the strike zone vertically. There is a change in the amount of strikeouts (decrease in K%).
